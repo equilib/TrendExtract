@@ -51,10 +51,10 @@ def main():
 
     alcTrend = TrendExtract(usr, pwd)
 
-    #base_url = "http://63.227.116.65"
-    base_url = "http://10.2.70.8/_trendgraph/servlets/"
-    #dbid = "3262"
-    #trend_name = "ahu_flo_err_tn"
+    base_url = "http://63.227.116.65"
+    # base_url = "http://10.2.70.8/_trendgraph/servlets/"
+    # dbid = "3262"
+    # trend_name = "ahu_flo_err_tn"
 
     posix_timestamp = alcTrend.posix_timestamp( date(year, month, day) )
 

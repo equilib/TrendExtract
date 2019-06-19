@@ -174,3 +174,69 @@ class TrendExtract:
             json.dump(self.__json_data, open(file_name + ".json", mode))
         except:
             print("Unable to write json datafile {}".format(trend_name))
+
+
+
+class ALCTrendExtract( TrendExtract ):
+    
+    def __init__(self, uname, pword):
+        '''
+        '''
+        super().__init__(uname, pword)
+
+
+    def format_url_timestamp(self, raw_url : str, timestamp : datetime) -> str:
+        '''
+        format_url_timestamp - returns raw_url formatted with new posix timestamp inserted
+        @TODO: Rewrite to be generic for supperclass; keep for ALC class
+        @param: raw_url (str) - raw url format for trend
+        @param: timestamp (str) - datetime timestamp
+        @return: (str) formatted url
+        '''
+        # convert timestamp to unix microsecond timestamp str
+        if type(timestamp) is datetime:
+            timestamp = self.format_timestamp(timestamp)
+
+        # replace existing timestamp in raw_url string
+        return raw_url.replace(re.search(r'(?<=\=)(?:\w+)(?=\&)', raw_url).group(0), timestamp)
+
+    def format_url_dbid(self, raw_url : str, dbid : str) -> str:
+        '''
+        format_url_dbid - formats raw_url with new database id (dbid)
+        @param: raw_url (str) - raw url format for trend
+        @param: dbid (str) - database id string
+        @return: (str) formatted url
+        '''
+        # replace dbid 4 digit number in url
+        return raw_url.replace( re.search(r'(?<=\:)(?:\w{4})(?=\:)', raw_url).group(0), dbid)
+
+    def format_url_trend_name(self, raw_url : str, trend_name : str) -> str:
+        '''
+        format_url_dbid - formats raw_url with new database id (dbid)
+        @param: raw_url (str) - raw url format for trend
+        @param: trend_name (str) - string containing the trend name
+        @return: (str) formatted url
+        '''
+        # replace trend_name in url
+        return raw_url.replace( re.search(r'(?<=\:)(?:\w+)(?=\&)', raw_url).group(0), trend_name)
+
+    def write_json_data(self, mode : str):
+        '''
+        write_json_data - writes json data, from GET request, to .json data file
+                          data file name is formatted as <trend_name> <datetime>.json
+        @TODO: Rewrite to be generic for superclass, but keep for ALC subclass
+        @param: mode (str) - write 'w' or append 'a'
+        @return: None
+        '''
+        try:
+            # get filename from json data
+            DBID = self.__json_data[0]['source'].split(':')[2]
+            trend_name = self.__json_data[0]['source'].split(':')[3]
+            # get current date and time
+            datetime_now = str(datetime.now().strftime("%Y-%m-%d"))
+
+            file_name = "DBID-{0}-{1}-{2}".format(DBID, trend_name, datetime_now)
+
+            json.dump(self.__json_data, open(file_name + ".json", mode))
+        except:
+            print("Unable to write json datafile {}".format(trend_name))

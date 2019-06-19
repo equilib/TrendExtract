@@ -16,66 +16,21 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-import mechanicalsoup
+
 import re
 import json
 import time
 
+from src.Login import Login
 from datetime import datetime, date
 
 class TrendExtract:
 
     def __init__(self, uname : str, pword : str):
         '''
-        __init__
-
-        @param: uname (str) - username
-        @param: pword (str) - password
-        '''
-        self.__set_uname(uname)
-        self.__set_pword(pword)
-        self.__uname_form_field = "j_username"
-        self.__pword_form_field = "j_password"
-        self.__json_data = None
-        self.__browser = mechanicalsoup.StatefulBrowser()
-
-        self.__count = 0
-
-
-    def __set_uname(self, uname : str): self.__uname = uname
-
-    def __set_pword(self, pword : str): self.__pword = pword
-
-    def __init_browser(self, url : str) -> json:
 
         '''
-        __init_browser - initalizes browser with url, uname, and pword
-
-        @param: url (str) - formatted url
-        '''
-        try:
-            response = self.__browser.open(url)
-        except:
-            print("Error opening url {0}".format(url))
-
-        # if the initialization count = 0 or the response is not OK -> AUTH
-        if self.__count == 0 or not response.ok:
-
-            self.__browser.select_form()
-            # print(self.__browser.get_current_page())
-            # init browser login form fields with uname / pword data
-            self.__browser[self.__uname_form_field] = self.__uname
-            self.__browser[self.__pword_form_field] = self.__pword
-            response = self.__browser.submit_selected()
-
-            self.__count += 1
-
-        return response.json()
-
-
-    def update_uname(self, uname : str): self.__set_uname(uname)
-
-    def update_pword(self, pword : str): self.__set_pword(pword)
+        self.__login = Login(uname, pword)
 
     def posix_timestamp(self, timestamp : datetime) -> str:
         '''
@@ -135,6 +90,7 @@ class TrendExtract:
         format_raw_url: formats the raw url and populates with correct dbid and timestamp
                       - timestamp requires RH padding of three zeros to format correct url
                       - currently unk as to why (milliseconds?)
+        @TODO: Rewrite to be generic for base class
         @param: raw_url (str) - raw url; example "http://63.227.116.65/_trendgraph/servlets/trenddata?sources=DBID:1:2289:chwr_temp&start=1534614000000&resolution=20093&withField=true"
         @param: dbid (str) - database id for trend
         @param: trend_name (str) - name of trend log associated with the database id
@@ -146,6 +102,7 @@ class TrendExtract:
     def format_url_timestamp(self, raw_url : str, timestamp : datetime) -> str:
         '''
         format_url_timestamp - returns raw_url formatted with new posix timestamp inserted
+        @TODO: Rewrite to be generic for supperclass; keep for ALC class
         @param: raw_url (str) - raw url format for trend
         @param: timestamp (str) - datetime timestamp
         @return: (str) formatted url
@@ -186,7 +143,7 @@ class TrendExtract:
         @returns: True if response == 200, False otherwise
         '''
         # initialize browser
-        response = self.__init_browser(url)
+        response = self.__login.init_browser(url)
         self.__json_data = response
 
     def get_trend_data(self) -> json:
@@ -201,6 +158,7 @@ class TrendExtract:
         '''
         write_json_data - writes json data, from GET request, to .json data file
                           data file name is formatted as <trend_name> <datetime>.json
+        @TODO: Rewrite to be generic for superclass, but keep for ALC subclass
         @param: mode (str) - write 'w' or append 'a'
         @return: None
         '''

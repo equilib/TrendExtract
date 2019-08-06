@@ -20,7 +20,7 @@ import sys
 
 sys.path.append('../')
 
-from src.TrendExtract import TrendExtract
+from TrendExtract.src.TrendExtract import TrendExtract
 from datetime import date
 from getpass import getpass
 

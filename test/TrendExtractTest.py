@@ -50,9 +50,10 @@ def main():
     year, month, day = [ int(v) for v in trend_date.split("-") ]
 
     alcTrend = TrendExtract(usr, pwd)
-
-    base_url = "http://63.227.116.65"
-    # base_url = "http://10.2.70.8/_trendgraph/servlets/"
+    
+    ip_addr = "127.0.0.1"
+    
+    base_url = "http://" + ip_addr + "/_trendgraph/servlets/"
     # dbid = "3262"
     # trend_name = "ahu_flo_err_tn"
 
